@@ -1,0 +1,27 @@
+﻿version: '3'
+
+services:
+  db:
+    image: mysql/mysql-server
+    container_name: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Zrf123456
+    volumes:
+      - /e/docker/mysql/config/my.cnf:/etc/my.cnf
+      - mysql-data:/var/lib/mysql
+  webapi:
+    build: .   
+    container_name: userapi
+    ports:
+      - "5678:80"   
+    volumes:
+      - /e/docker/test/userapi/config/appsettings.json:/app/appsettings.json
+    depends_on:
+      - db
+volumes:
+  mysql-data:
+    external: true
+  
