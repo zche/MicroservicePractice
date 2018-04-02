@@ -21,6 +21,7 @@ namespace User.Api.Data
                 .ToTable("Users")
                 .HasKey(u => u.Id);
 
+
             modelBuilder.Entity<UserProperty>().Property(p => p.Key).HasMaxLength(100);
             modelBuilder.Entity<UserProperty>().Property(p => p.Value).HasMaxLength(100);
 
