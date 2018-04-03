@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using User.Api.Models;
 
 namespace User.Api.Controllers
 {
@@ -37,13 +39,29 @@ namespace User.Api.Controllers
         }
 
         [HttpPatch("")]
-        public async Task<IActionResult> Patch()
+        public async Task<IActionResult> Patch([FromBody]JsonPatchDocument<AppUser> patch)
         {
-            return Json(new
+            var user = await _userContext.Users
+                //.Include(u => u.Properties)
+                .FirstOrDefaultAsync(u => u.Id == UserIdentity.UserId);
+
+            //var originProperties = user.Properties;
+
+            patch.ApplyTo(user);
+            foreach (var property in user.Properties)
             {
-                message = "welcome!",
-                user = await _userContext.Users.FirstOrDefaultAsync(u => u.Name == "check")
-            });
+                _userContext.Entry(property).State = EntityState.Detached;
+            }
+            var originProperties = await _userContext.UserProperties.AsNoTracking().Where(u=>u.AppUserId==UserIdentity.UserId).ToListAsync();
+            var allProperties = originProperties.Union(user.Properties).Distinct();
+
+            var removedProperties = originProperties.Except(user.Properties);
+            var newProperties = allProperties.Except(originProperties);
+
+            _userContext.RemoveRange(removedProperties);
+            _userContext.AddRange(newProperties);
+            _userContext.SaveChanges();
+            return Json(user);
         }
 
 

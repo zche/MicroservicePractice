@@ -15,6 +15,8 @@ namespace User.Api.Data
         }
         public DbSet<AppUser> Users { get; set; }
 
+        public DbSet<UserProperty> UserProperties { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AppUser>()
