@@ -52,7 +52,7 @@ namespace User.Api.Controllers
             {
                 _userContext.Entry(property).State = EntityState.Detached;
             }
-            var originProperties = await _userContext.UserProperties.AsNoTracking().Where(u=>u.AppUserId==UserIdentity.UserId).ToListAsync();
+            var originProperties = await _userContext.UserProperties.AsNoTracking().Where(u => u.AppUserId == UserIdentity.UserId).ToListAsync();
             var allProperties = originProperties.Union(user.Properties).Distinct();
 
             var removedProperties = originProperties.Except(user.Properties);
@@ -64,6 +64,20 @@ namespace User.Api.Controllers
             return Json(user);
         }
 
+        /// <summary>
+        /// 检查或者创建用户（当用户手机号不存在的时候创建用户）
+        /// </summary>
+        /// <param name="tel"></param>
+        /// <returns></returns>
+        [HttpPost("check-or-create")]
+        public async Task<IActionResult> CheckOrCreate(string tel)
+        {
+            if (await _userContext.Users.AnyAsync(u => u.Tel == tel))
+            {
+                _userContext.Users.Add(new AppUser { Tel = tel });
+            }
+            return Ok();
+        }
 
         [HttpGet("Exception")]
         public IActionResult Exception()
