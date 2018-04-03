@@ -24,6 +24,6 @@ namespace User.Api.Models
         public string City { get; set; }
         public int CityID { get; set; }
         public string NameCard { get; set; }
-        List<UserProperty> Properties { get; set; }
+        public List<UserProperty> Properties { get; set; }
     }
 }

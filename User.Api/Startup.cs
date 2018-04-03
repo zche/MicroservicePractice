@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using User.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using NLog.Extensions.Logging;
 
 namespace User.Api
 {
@@ -35,14 +36,19 @@ namespace User.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
+            //else
+            //{
+            app.UseExceptionHandler("/api/users/Exception");
+            //}          
             app.UseMvc();
+            loggerFactory.AddNLog();//添加NLog 
+            NLog.LogManager.LoadConfiguration("nlog.config");
             //UserContextSeed.SeedAsync(app, loggerFactory).Wait();
-            //InitUserDb(app);
+            InitUserDb(app);
         }
 
         public void InitUserDb(IApplicationBuilder app)
