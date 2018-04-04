@@ -11,6 +11,6 @@ namespace User.Identity.Services
         /// 检查手机号是否注册，如果没有注册就立即注册一个
         /// </summary>
         /// <param name="tel"></param>
-        int CheckOrCreate(string tel);
+        Task<int> CheckOrCreate(string tel);
     }
 }

@@ -72,11 +72,15 @@ namespace User.Api.Controllers
         [HttpPost("check-or-create")]
         public async Task<IActionResult> CheckOrCreate(string tel)
         {
-            if (await _userContext.Users.AnyAsync(u => u.Tel == tel))
+            var user = await _userContext.Users.FirstOrDefaultAsync(u => u.Tel == tel);
+            if (user == null)
             {
-                _userContext.Users.Add(new AppUser { Tel = tel });
+                var newUser = new AppUser { Tel = tel };
+                _userContext.Users.Add(newUser);
+                _userContext.SaveChanges();
+                return Ok(newUser.Id);
             }
-            return Ok();
+            return Ok(user.Id);
         }
 
         [HttpGet("Exception")]

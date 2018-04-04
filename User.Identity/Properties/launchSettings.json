@@ -2,11 +2,10 @@
   "profiles": {
     "User.Identity": {
       "commandName": "Project",
-      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:63290/"
+      "applicationUrl": "http://localhost:8666/"
     }
   }
 }

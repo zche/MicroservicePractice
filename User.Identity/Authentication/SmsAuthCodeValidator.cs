@@ -20,7 +20,7 @@ namespace User.Identity.Authentication
         }
         public string GrantType => "sms_auth_code";
 
-        public Task ValidateAsync(ExtensionGrantValidationContext context)
+        public async Task ValidateAsync(ExtensionGrantValidationContext context)
         {
             var tel = context.Request.Raw["tel"];
             var code = context.Request.Raw["auth_code"];
@@ -33,13 +33,12 @@ namespace User.Identity.Authentication
             {
                 context.Result = errorValidationResult;
             }
-            var userId = _userService.CheckOrCreate(tel);
+            var userId = await _userService.CheckOrCreate(tel);
             if (userId <= 0)
             {
                 context.Result = errorValidationResult;
             }
             context.Result = new GrantValidationResult(userId.ToString(), GrantType);
-            return Task.CompletedTask;
         }
     }
 }
