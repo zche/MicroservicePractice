@@ -15,7 +15,7 @@ namespace User.Identity
         {
             return new[]
             {
-                new ApiResource("user_api", "用户接口")
+                new ApiResource("gateway_api", "网关")
             };
         }
 
@@ -41,7 +41,7 @@ namespace User.Identity
                     {IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
-                        "user_api"
+                        "gateway_api"
                     }
                 }
             };

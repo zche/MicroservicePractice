@@ -1,11 +1,11 @@
 {
   "profiles": {
-    "User.Identity": {
+    "Api.Gateway": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:8000/"
+      "applicationUrl": "http://localhost/"
     }
   }
 }
