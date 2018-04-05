@@ -11,6 +11,10 @@ using Microsoft.Extensions.Options;
 using User.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
+using User.Api.Configuration;
+using Consul;
+using Microsoft.Extensions.Hosting;
+using User.Api.Helper;
 
 namespace User.Api
 {
@@ -30,12 +34,25 @@ namespace User.Api
             {
                 opt.UseMySQL(Configuration.GetConnectionString("MysqlUser"));
             });
+            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            services.AddSingleton<IConsulClient>(p => new ConsulClient(cfg =>
+            {
+                var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
+
+                if (!string.IsNullOrEmpty(serviceConfiguration.Consul.HttpEndpoint))
+                {
+                    // if not configured, the client will use the default value "127.0.0.1:8500"
+                    cfg.Address = new Uri(serviceConfiguration.Consul.HttpEndpoint);
+                }
+            }));
+            services.AddSingleton<IHostedService, HostedService>();
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            GlobalObject.App = app;
             //if (env.IsDevelopment())
             //{
             //    app.UseDeveloperExceptionPage();
