@@ -83,6 +83,38 @@ namespace User.Api.Controllers
             return Ok(user.Id);
         }
 
+        [HttpGet("tags")]
+        public async Task<IActionResult> GetUserTags()
+        {
+            return Json(await _userContext.UserTags.ToListAsync());
+        }
+
+        [HttpPost("search")]
+        public async Task<IActionResult> Search(string tel)
+        {
+            return Json(await _userContext.Users.FirstOrDefaultAsync(u => u.Tel == tel));
+        }
+
+        [HttpPut("tags")]
+        public async Task<IActionResult> UpdateTags([FromBody]List<string> tags)
+        {
+            var originTags = await _userContext.UserTags.Where(u => u.UserId == this.UserIdentity.UserId).ToListAsync();
+            var newTags = tags.Except(originTags.Select(t => t.Tag));
+            if (newTags != null && newTags.Count() > 0)
+            {
+                _userContext.UserTags.AddRange(newTags.Select(t => new UserTag
+                {
+                    UserId = this.UserIdentity.UserId,
+                    CreatedTime = DateTime.Now,
+                    Tag = t
+                }));
+                _userContext.SaveChanges();
+            }
+            return Ok();
+        }
+
+
+
         [HttpGet("Exception")]
         public IActionResult Exception()
         {

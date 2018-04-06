@@ -17,6 +17,10 @@ namespace User.Api.Data
 
         public DbSet<UserProperty> UserProperties { get; set; }
 
+        public DbSet<UserTag> UserTags { get; set; }
+
+        public DbSet<BPFile> BPFiles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AppUser>()
