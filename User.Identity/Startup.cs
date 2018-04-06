@@ -11,8 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Resilience.Http;
 using User.Identity.Configuration;
 using User.Identity.Services;
+using User.Identity.Infrastructure;
+using Microsoft.AspNetCore.Http;
 
 namespace User.Identity
 {
@@ -46,7 +49,16 @@ namespace User.Identity
                 return new LookupClient(serviceConfiguration.Consul.DnsEndpoint.ToIPEndPoint());
             });
 
-            services.AddSingleton(new HttpClient());
+            //services.AddSingleton(new HttpClient());
+            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton(typeof(ResilienceHttpClientFactory),sp=> {
+                var logger = sp.GetRequiredService<ILogger<ResilientHttpClient>>();
+                var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+                var retryCount = 5;
+                var exceptionsAllowedBeforeBreaking = 5;
+                return new ResilienceHttpClientFactory(logger,httpContextAccessor,retryCount,exceptionsAllowedBeforeBreaking);
+            });
+            services.AddSingleton<IHttpClient>(sp=>sp.GetRequiredService<ResilienceHttpClientFactory>().GetResilientHttpClient());
 
             services.AddMvc();
         }
