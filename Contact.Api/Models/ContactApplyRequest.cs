@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Contact.Api.Models
 {
-    public class ContactApplyRequest
+    public class ContactApplyRequest : EntityBase<int>
     {
-        public int ApplyId { get; set; }
+        public int ApplicantId { get; set; }
         public int UserId { get; set; }
         public string Name { get; set; }
         public string Company { get; set; }

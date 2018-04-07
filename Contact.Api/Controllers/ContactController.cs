@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Contact.Api.Data;
 using Contact.Api.Models;
 using Contact.Api.Services;
+using Contact.Api.ViewModels;
 
 namespace Contact.Api.Controllers
 {
@@ -13,12 +14,25 @@ namespace Contact.Api.Controllers
     public class ContactController : BaseController
     {
         private readonly IContactApplyRequestRepository _contactApplyRequestRepository;
+        private readonly IContactBookRepository _contactBookRepository;
         private readonly IUserService _userService;
 
-        public ContactController(IContactApplyRequestRepository contactApplyRequestRepository, IUserService userService)
+        public ContactController(IContactApplyRequestRepository contactApplyRequestRepository, IUserService userService, IContactBookRepository contactBookRepository)
         {
             _contactApplyRequestRepository = contactApplyRequestRepository;
             _userService = userService;
+            _contactBookRepository = contactBookRepository;
+        }
+
+        /// <summary>
+        /// 获取当前用户的好友列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("")]
+        public async Task<IActionResult> Get()
+        {
+            var request = await _contactBookRepository.GetContactsAsync(this.UserIdentity.UserId);
+            return Json(request);
         }
 
         /// <summary>
@@ -52,7 +66,7 @@ namespace Contact.Api.Controllers
                     Avatar = baseUserInfo.Avatar,
                     Title = baseUserInfo.Title,
                     CreatedTime = DateTime.Now,
-                    ApplyId = this.UserIdentity.UserId
+                    ApplicantId = this.UserIdentity.UserId
                 }
                 );
             if (!result) return BadRequest();
@@ -67,9 +81,27 @@ namespace Contact.Api.Controllers
         [HttpPut("approve-apply")]
         public async Task<IActionResult> ApproveApplyRequest(int applicantId)
         {
-            var result = await _contactApplyRequestRepository.ApproveAsync(applicantId);
+            var result = await _contactApplyRequestRepository.ApproveAsync(UserIdentity.UserId, applicantId);
             if (!result) return BadRequest();
+
+            var applicant = await _userService.GetBaseUserInfoAsync(applicantId);
+            var currentUser = await _userService.GetBaseUserInfoAsync(UserIdentity.UserId);
+            await _contactBookRepository.AddContactAysnc(applicantId, currentUser);
+            await _contactBookRepository.AddContactAysnc(UserIdentity.UserId, applicant);
             return Ok();
         }
+
+        /// <summary>
+        /// 更新好友标签
+        /// </summary>
+        /// <param name="applicantId"></param>
+        /// <returns></returns>
+        [HttpPut("update-tags")]
+        public async Task<IActionResult> UpdateContactTags([FromBody]ContactTagsInputViewModel tagsViewModel)
+        {
+            var result = await _contactBookRepository.UpdateContactTagsAsync(UserIdentity.UserId, tagsViewModel.ContatId, tagsViewModel.Tags);
+            return Json(result);
+        }
+
     }
 }

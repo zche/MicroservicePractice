@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Contact.Api.Models
 {
-    public class ContactBook
+    public class ContactBook : EntityBase<int>
     {
         public int UserId { get; set; }
-        List<Contact> Contacts { get; set; }
+        public List<Contact> Contacts { get; set; } = new List<Contact>();
     }
 }
