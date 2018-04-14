@@ -1,6 +1,7 @@
 ﻿using DnsClient;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Resilience.Http;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using User.Identity.Configuration;
+using User.Identity.Dtos;
 
 namespace User.Identity.Services
 {
@@ -26,7 +28,7 @@ namespace User.Identity.Services
             _uesrServiceUrl = $"http://{host}:{port}";
             _logger = logger;
         }
-        public async Task<int> CheckOrCreate(string tel)
+        public async Task<UserInfo> CheckOrCreate(string tel)
         {
             var content = new Dictionary<string, string> { { "tel", tel } };
             var formContent = new FormUrlEncodedContent(content);
@@ -35,9 +37,8 @@ namespace User.Identity.Services
                 var response = await _httpClient.PostAsync(_uesrServiceUrl + "/api/users/check-or-create", content);
                 if (response.IsSuccessStatusCode)
                 {
-                    var userId = await response.Content.ReadAsStringAsync();
-                    int.TryParse(userId, out int intUserId);
-                    return intUserId;
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<UserInfo>(json);
                 }
             }
             catch (Exception ex)
@@ -45,7 +46,7 @@ namespace User.Identity.Services
                 _logger.LogError($"CheckOrCreate失败，异常信息为{ex.ToString()}");
                 throw;
             }
-            return 0;
+            return null;
         }
     }
 }

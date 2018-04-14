@@ -16,6 +16,7 @@ using User.Identity.Configuration;
 using User.Identity.Services;
 using User.Identity.Infrastructure;
 using Microsoft.AspNetCore.Http;
+using User.Identity.Authentication;
 
 namespace User.Identity
 {
@@ -32,6 +33,7 @@ namespace User.Identity
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddIdentityServer()
+                .AddProfileService<ProfileService>()
                 .AddExtensionGrantValidator<Authentication.SmsAuthCodeValidator>()
                 .AddDeveloperSigningCredential()
                 .AddInMemoryClients(InMemoryConfiguration.Clients())

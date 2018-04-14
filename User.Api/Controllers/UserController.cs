@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using User.Api.Models;
+using User.Api.Dtos;
 
 namespace User.Api.Controllers
 {
@@ -70,17 +71,32 @@ namespace User.Api.Controllers
         /// <param name="tel"></param>
         /// <returns></returns>
         [HttpPost("check-or-create")]
-        public async Task<IActionResult> CheckOrCreate(string tel)
+        public async Task<IActionResult> CheckOrCreate([FromBody]RequestCheckUserDto dto)
         {
-            var user = await _userContext.Users.FirstOrDefaultAsync(u => u.Tel == tel);
+            var user = await _userContext.Users.FirstOrDefaultAsync(u => u.Tel == dto.Tel);
             if (user == null)
             {
-                var newUser = new AppUser { Tel = tel };
+                var newUser = new AppUser { Tel = dto.Tel };
                 _userContext.Users.Add(newUser);
                 _userContext.SaveChanges();
                 return Ok(newUser.Id);
             }
-            return Ok(user.Id);
+            return Ok(new
+            {
+                user.Id,
+                user.Name,
+                user.Company,
+                user.Title,
+                user.Avatar
+            });
+        }
+
+        [HttpGet("userInfo")]
+        public async Task<IActionResult> GetBaseUserInfo(int userId)
+        {
+            var user = await _userContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) return null;
+            return Json(user);
         }
 
         [HttpGet("tags")]

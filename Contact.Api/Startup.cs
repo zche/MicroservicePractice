@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using Contact.Api.Data;
+using Contact.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +27,20 @@ namespace Contact.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IContactApplyRequestRepository, MongoContactApplyRequestRepository>();
+            services.AddScoped<IContactBookRepository, MongoContactBookRepository>();
+            services.AddScoped<IUserService, UserService>();
+
+            services.Configure<MongoDBSetting>(Configuration.GetSection("MongoSettings"));
+            services.AddSingleton<ContactContext>();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt=> {
+                    opt.RequireHttpsMetadata = false;
+                    opt.Audience = "contact_api";
+                    opt.Authority = "http://localhost";
+                });
             services.AddMvc();
         }
 
@@ -33,7 +51,7 @@ namespace Contact.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

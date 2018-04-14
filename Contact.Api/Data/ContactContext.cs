@@ -38,5 +38,8 @@ namespace Contact.Api.Data
         public IMongoCollection<Models.Contact> Contacts => _db.GetCollection<Models.Contact>("Contacts");
 
         public IMongoCollection<ContactBook> ContactBooks => _db.GetCollection<ContactBook>("ContactBooks");
+
+        //private void CheckAndCreateCollection(string collName)
+        //{ }
     }
 }

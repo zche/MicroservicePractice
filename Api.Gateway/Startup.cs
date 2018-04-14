@@ -26,6 +26,7 @@ namespace Api.Gateway
                 o.SupportedTokens = SupportedTokens.Both;
                 o.ApiSecret = "secret";
                 o.RequireHttpsMetadata = false;
+
             };
 
             services.AddAuthentication()

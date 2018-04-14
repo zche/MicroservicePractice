@@ -39,7 +39,7 @@ namespace Contact.Api.Controllers
         /// 获取当前用户的好友申请列表
         /// </summary>
         /// <returns></returns>
-        [HttpGet("apply-list")]
+        [HttpGet("apply-request")]
         public async Task<IActionResult> GetApplyRequest()
         {
             var request = await _contactApplyRequestRepository.GetRequestListAsync(this.UserIdentity.UserId);
@@ -51,7 +51,7 @@ namespace Contact.Api.Controllers
         /// </summary>
         /// <param name="applicantId"></param>
         /// <returns></returns>
-        [HttpPost("add-apply")]
+        [HttpPost("apply-request")]
         public async Task<IActionResult> AddApplyRequest(int userId)
         {
             var baseUserInfo = await _userService.GetBaseUserInfoAsync(userId);
@@ -78,7 +78,7 @@ namespace Contact.Api.Controllers
         /// </summary>
         /// <param name="applicantId"></param>
         /// <returns></returns>
-        [HttpPut("approve-apply")]
+        [HttpPut("apply-request")]
         public async Task<IActionResult> ApproveApplyRequest(int applicantId)
         {
             var result = await _contactApplyRequestRepository.ApproveAsync(UserIdentity.UserId, applicantId);
@@ -96,7 +96,7 @@ namespace Contact.Api.Controllers
         /// </summary>
         /// <param name="applicantId"></param>
         /// <returns></returns>
-        [HttpPut("update-tags")]
+        [HttpPut("tags")]
         public async Task<IActionResult> UpdateContactTags([FromBody]ContactTagsInputViewModel tagsViewModel)
         {
             var result = await _contactBookRepository.UpdateContactTagsAsync(UserIdentity.UserId, tagsViewModel.ContatId, tagsViewModel.Tags);

@@ -15,7 +15,8 @@ namespace User.Identity
         {
             return new[]
             {
-                new ApiResource("gateway_api", "网关")
+                new ApiResource("gateway_api", "网关"),
+                new ApiResource("contact_api", "网关")
             };
         }
 
@@ -35,13 +36,15 @@ namespace User.Identity
                     RefreshTokenExpiration=TokenExpiration.Sliding,
                     AllowOfflineAccess = true,
                     RequireClientSecret=false,
+                    AlwaysSendClientClaims=true,
                     AlwaysIncludeUserClaimsInIdToken=true,
                     AllowedGrantTypes =new List<string>{"sms_auth_code" },
                     AllowedScopes = new List<string>
                     {IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
-                        "gateway_api"
+                        "gateway_api",
+                        "contact_api"
                     }
                 }
             };
