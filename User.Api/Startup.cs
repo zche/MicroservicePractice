@@ -15,6 +15,8 @@ using User.Api.Configuration;
 using Consul;
 using Microsoft.Extensions.Hosting;
 using User.Api.Helper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace User.Api
 {
@@ -46,6 +48,17 @@ namespace User.Api
                 }
             }));
             services.AddSingleton<IHostedService, HostedService>();
+
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt => {
+                    opt.RequireHttpsMetadata = false;
+                    opt.Audience = "user_api";
+                    opt.Authority = "http://localhost";
+                });
+            services.AddMvc();
+
             services.AddMvc();
         }
 
@@ -61,6 +74,7 @@ namespace User.Api
             //{
             app.UseExceptionHandler("/api/users/Exception");
             //}          
+            app.UseAuthentication();
             app.UseMvc();
             loggerFactory.AddNLog();//添加NLog 
             NLog.LogManager.LoadConfiguration("nlog.config");

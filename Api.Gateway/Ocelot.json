@@ -10,10 +10,26 @@
         }
       ],
       "UpstreamPathTemplate": "/users",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UserApiKey",
+        "AllowedScopes": [ "user_api" ]
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/userinfo/{userId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5678
+        }
+      ],
+      "UpstreamPathTemplate": "/users/userinfo/{userId}",
       "UpstreamHttpMethod": [ "Get" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "UserApiKey",
-        "AllowedScopes": []
+        "AllowedScopes": [ "user_api" ]
       }
     },
     {
@@ -57,6 +73,22 @@
       }
     },
     {
+      "DownstreamPathTemplate": "/api/contact/apply-request",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5679
+        }
+      ],
+      "UpstreamPathTemplate": "/contact/apply-request",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UserApiKey",
+        "AllowedScopes": [ "contact_api" ]
+      }
+    },
+    {
       "DownstreamPathTemplate": "/api/contact/tags",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -69,7 +101,7 @@
       "UpstreamHttpMethod": [ "Get" ]
     },
     {
-      "DownstreamPathTemplate": "/api/contact/apply-request",
+      "DownstreamPathTemplate": "/api/contact/apply-request/{userId}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -77,8 +109,20 @@
           "Port": 5679
         }
       ],
-      "UpstreamPathTemplate": "/contact/apply-request",
-      "UpstreamHttpMethod": [ "Get", "Post", "Put" ]
+      "UpstreamPathTemplate": "/contact/apply-request/{userId}",
+      "UpstreamHttpMethod": [ "Get", "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/contact/apply-request/{applicantId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5679
+        }
+      ],
+      "UpstreamPathTemplate": "/contact/apply-request/{applicantId}",
+      "UpstreamHttpMethod": [ "Put" ]
     }
   ],
   "GlobalConfiguration": {

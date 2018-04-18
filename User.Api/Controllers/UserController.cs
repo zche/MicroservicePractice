@@ -91,12 +91,19 @@ namespace User.Api.Controllers
             });
         }
 
-        [HttpGet("userInfo")]
+        [HttpGet("userInfo/{userId}")]
         public async Task<IActionResult> GetBaseUserInfo(int userId)
         {
             var user = await _userContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return null;
-            return Json(user);
+            if (user == null) return NotFound();
+            return Json(new
+            {
+                UserId = user.Id,
+                user.Name,
+                user.Company,
+                user.Title,
+                user.Avatar
+            });
         }
 
         [HttpGet("tags")]

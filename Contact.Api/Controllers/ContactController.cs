@@ -51,7 +51,7 @@ namespace Contact.Api.Controllers
         /// </summary>
         /// <param name="applicantId"></param>
         /// <returns></returns>
-        [HttpPost("apply-request")]
+        [HttpPost("apply-request/{userId}")]
         public async Task<IActionResult> AddApplyRequest(int userId)
         {
             var baseUserInfo = await _userService.GetBaseUserInfoAsync(userId);
@@ -78,7 +78,7 @@ namespace Contact.Api.Controllers
         /// </summary>
         /// <param name="applicantId"></param>
         /// <returns></returns>
-        [HttpPut("apply-request")]
+        [HttpPut("apply-request/{applicantId}")]
         public async Task<IActionResult> ApproveApplyRequest(int applicantId)
         {
             var result = await _contactApplyRequestRepository.ApproveAsync(UserIdentity.UserId, applicantId);
