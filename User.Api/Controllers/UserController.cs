@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using User.Api.Models;
 using User.Api.Dtos;
+using DotNetCore.CAP;
 
 namespace User.Api.Controllers
 {
@@ -20,11 +21,30 @@ namespace User.Api.Controllers
     {
         private readonly UserContext _userContext;
         private readonly ILogger<UserController> _logger;
+        private readonly ICapPublisher _capPublisher;
 
-        public UserController(UserContext userContext, ILogger<UserController> logger)
+        private void RaiseUserProfileChangeEvent(AppUser user)
+        {
+            if (_userContext.Entry(user).Property(nameof(user.Name)).IsModified ||
+                _userContext.Entry(user).Property(nameof(user.Title)).IsModified ||
+                _userContext.Entry(user).Property(nameof(user.Company)).IsModified ||
+                _userContext.Entry(user).Property(nameof(user.Avatar)).IsModified)
+            {
+                _capPublisher.Publish("userapi.user_profile_changed", new UserIdentity
+                {
+                    UserId = user.Id,
+                    Name = user.Name,
+                    Company = user.Company,
+                    Avatar = user.Avatar
+                });
+            }
+        }
+
+        public UserController(UserContext userContext, ILogger<UserController> logger, ICapPublisher capPublisher)
         {
             _userContext = userContext;
             _logger = logger;
+            _capPublisher = capPublisher;
         }
 
         [HttpGet("")]
@@ -61,7 +81,14 @@ namespace User.Api.Controllers
 
             _userContext.RemoveRange(removedProperties);
             _userContext.AddRange(newProperties);
-            _userContext.SaveChanges();
+
+            using (var trans = _userContext.Database.BeginTransaction())
+            {
+                this.RaiseUserProfileChangeEvent(user);//发布用户属性变更的消息
+                _userContext.SaveChanges();
+                trans.Commit();
+            }
+
             return Json(user);
         }
 

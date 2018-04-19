@@ -52,12 +52,26 @@ namespace User.Api
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt => {
+                .AddJwtBearer(opt =>
+                {
                     opt.RequireHttpsMetadata = false;
                     opt.Audience = "user_api";
                     opt.Authority = "http://localhost";
                 });
-            services.AddMvc();
+            services.AddCap(opt =>
+            {
+                opt.UseEntityFramework<UserContext>().UseRabbitMQ("localhost").UseDashboard();
+                //注册到consul
+                opt.UseDiscovery(d =>
+                {
+                    d.DiscoveryServerHostName = "localhost";
+                    d.DiscoveryServerPort = 8500;
+                    d.CurrentNodeHostName = "localhost";
+                    d.CurrentNodePort = 5800;
+                    d.NodeId = 1;
+                    d.NodeName = "CAP 第一个节点";
+                });
+            });
 
             services.AddMvc();
         }
@@ -73,6 +87,7 @@ namespace User.Api
             //else
             //{
             app.UseExceptionHandler("/api/users/Exception");
+            app.UseCap();
             //}          
             app.UseAuthentication();
             app.UseMvc();

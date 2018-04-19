@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Contact.Api.Configurations;
 using Contact.Api.Data;
 using Contact.Api.Infrastructure;
+using Contact.Api.IntegrationEvents;
 using Contact.Api.Services;
 using DnsClient;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,13 +36,15 @@ namespace Contact.Api
             services.AddScoped<IContactApplyRequestRepository, MongoContactApplyRequestRepository>();
             services.AddScoped<IContactBookRepository, MongoContactBookRepository>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<UserProfileChangedEventHandler>();
 
             services.Configure<MongoDBSetting>(Configuration.GetSection("MongoSettings"));
             services.AddSingleton<ContactContext>();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt=> {
+                .AddJwtBearer(opt =>
+                {
                     opt.RequireHttpsMetadata = false;
                     opt.Audience = "contact_api";
                     opt.Authority = "http://localhost";
@@ -57,7 +60,8 @@ namespace Contact.Api
 
             //services.AddSingleton(new HttpClient());
             //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton(typeof(ResilienceHttpClientFactory), sp => {
+            services.AddSingleton(typeof(ResilienceHttpClientFactory), sp =>
+            {
                 var logger = sp.GetRequiredService<ILogger<ResilientHttpClient>>();
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
                 var retryCount = 5;
@@ -65,6 +69,22 @@ namespace Contact.Api
                 return new ResilienceHttpClientFactory(logger, httpContextAccessor, retryCount, exceptionsAllowedBeforeBreaking);
             });
             services.AddSingleton<IHttpClient>(sp => sp.GetRequiredService<ResilienceHttpClientFactory>().GetResilientHttpClient());
+
+            services.AddCap(opt =>
+            {
+                opt.UseMySql("server=localhost;port=3306;database=beta_contact;userid=root;password=Zrf123456!;")
+                .UseRabbitMQ("localhost")
+                .UseDashboard();
+                opt.UseDiscovery(d =>
+                {
+                    d.DiscoveryServerHostName = "localhost";
+                    d.DiscoveryServerPort = 8500;
+                    d.CurrentNodeHostName = "localhost";
+                    d.CurrentNodePort = 5801;
+                    d.NodeId = 2;
+                    d.NodeName = "CAP 第二个节点";
+                });
+            });
             services.AddMvc();
         }
 
@@ -76,6 +96,7 @@ namespace Contact.Api
                 app.UseDeveloperExceptionPage();
             }
             app.UseAuthentication();
+            app.UseCap();
             app.UseMvc();
         }
     }
