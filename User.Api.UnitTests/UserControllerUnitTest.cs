@@ -29,7 +29,7 @@ namespace User.Api.UnitTests
         {
             var context = this.GetUserContext();
             var loggerMoq = new Mock<ILogger<UserController>>();
-            return (new UserController(context, loggerMoq.Object), context);
+            return (new UserController(context, loggerMoq.Object,null), context);
         }
 
         [Fact]

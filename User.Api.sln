@@ -15,9 +15,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resilience", "Resilience", "{BEF098E0-CCF4-4E0C-8EF5-230177AD88C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resilience.Http", "Resilience.Http\Resilience.Http.csproj", "{D6B6DF8B-E2B6-40F9-86C5-2976F7D6D72C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resilience.Http", "Resilience.Http\Resilience.Http.csproj", "{D6B6DF8B-E2B6-40F9-86C5-2976F7D6D72C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contact.Api", "Contact.Api\Contact.Api.csproj", "{6EE11B49-6BA5-461A-8DAB-937AA1FDB9B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contact.Api", "Contact.Api\Contact.Api.csproj", "{6EE11B49-6BA5-461A-8DAB-937AA1FDB9B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{D63A6BA1-95C9-4429-8120-80F63FD04B8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Api", "Project.Api\Project.Api.csproj", "{892F0BCC-FDDD-42FD-A520-215E247D760E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Domain", "Project.Domain\Project.Domain.csproj", "{FA2DC3D3-5F0E-43CA-9B62-26B9B7250CA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Infrastructure", "Project.Infrastructure\Project.Infrastructure.csproj", "{F5E2607A-E34D-4401-87A4-53A44D5C4E03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +57,18 @@ Global
 		{6EE11B49-6BA5-461A-8DAB-937AA1FDB9B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EE11B49-6BA5-461A-8DAB-937AA1FDB9B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EE11B49-6BA5-461A-8DAB-937AA1FDB9B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{892F0BCC-FDDD-42FD-A520-215E247D760E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{892F0BCC-FDDD-42FD-A520-215E247D760E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{892F0BCC-FDDD-42FD-A520-215E247D760E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{892F0BCC-FDDD-42FD-A520-215E247D760E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA2DC3D3-5F0E-43CA-9B62-26B9B7250CA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA2DC3D3-5F0E-43CA-9B62-26B9B7250CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA2DC3D3-5F0E-43CA-9B62-26B9B7250CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA2DC3D3-5F0E-43CA-9B62-26B9B7250CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5E2607A-E34D-4401-87A4-53A44D5C4E03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5E2607A-E34D-4401-87A4-53A44D5C4E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5E2607A-E34D-4401-87A4-53A44D5C4E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5E2607A-E34D-4401-87A4-53A44D5C4E03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +76,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{BEF098E0-CCF4-4E0C-8EF5-230177AD88C5} = {1653996D-C023-49D5-BA7A-A4A88B8C10D5}
 		{D6B6DF8B-E2B6-40F9-86C5-2976F7D6D72C} = {BEF098E0-CCF4-4E0C-8EF5-230177AD88C5}
+		{892F0BCC-FDDD-42FD-A520-215E247D760E} = {D63A6BA1-95C9-4429-8120-80F63FD04B8C}
+		{FA2DC3D3-5F0E-43CA-9B62-26B9B7250CA3} = {D63A6BA1-95C9-4429-8120-80F63FD04B8C}
+		{F5E2607A-E34D-4401-87A4-53A44D5C4E03} = {D63A6BA1-95C9-4429-8120-80F63FD04B8C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6AE2EF39-E0DC-43AB-864D-EBA70E8A0AFC}
