@@ -7,7 +7,7 @@ namespace Project.Api.Configurations
 {
     public class ServiceDiscoveryOptions
     {
-        public string UserServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public ConsulOptions Consul { get; set; }
     }

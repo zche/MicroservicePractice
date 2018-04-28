@@ -46,7 +46,9 @@ namespace Project.Domain.AggregatesModel
         public string AreaName { get; set; }
 
         public DateTime RegisterTime { get; set; }
-
+        /// <summary>
+        /// 简介
+        /// </summary>
         public string Introduction { get; set; }
 
         /// <summary>

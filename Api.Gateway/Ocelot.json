@@ -123,6 +123,22 @@
       ],
       "UpstreamPathTemplate": "/contact/apply-request/{applicantId}",
       "UpstreamHttpMethod": [ "Put" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/projects",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5680
+        }
+      ],
+      "UpstreamPathTemplate": "/projects",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UserApiKey",
+        "AllowedScopes": [ "project_api" ]
+      }
     }
   ],
   "GlobalConfiguration": {

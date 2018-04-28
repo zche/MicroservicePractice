@@ -17,7 +17,8 @@ namespace User.Identity
             {
                 new ApiResource("gateway_api", "网关"),
                 new ApiResource("contact_api", "通讯录接口"),
-                new ApiResource("user_api", "用户接口")
+                new ApiResource("user_api", "用户接口"),
+                new ApiResource("project_api", "项目接口"),
             };
         }
 
@@ -46,7 +47,8 @@ namespace User.Identity
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                         "gateway_api",
                         "contact_api",
-                        "user_api"
+                        "user_api",
+                        "project_api"
                     }
                 }
             };
