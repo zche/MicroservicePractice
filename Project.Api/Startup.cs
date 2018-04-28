@@ -69,6 +69,21 @@ namespace Project.Api
                     opt.Authority = "http://localhost";
                 });
             services.AddScoped<IProjectRepository, ProjectRepository>();
+
+            services.AddCap(opt =>
+            {
+                opt.UseEntityFramework<ProjectContext>().UseRabbitMQ("localhost").UseDashboard();
+                //注册到consul
+                opt.UseDiscovery(d =>
+                {
+                    d.DiscoveryServerHostName = "localhost";
+                    d.DiscoveryServerPort = 8500;
+                    d.CurrentNodeHostName = "localhost";
+                    d.CurrentNodePort = 5802;
+                    d.NodeId = 3;
+                    d.NodeName = "CAP 第三个节点";
+                });
+            });
             services.AddMvc();
         }
 
@@ -81,6 +96,7 @@ namespace Project.Api
                 app.UseDeveloperExceptionPage();
             }
             app.UseAuthentication();
+            app.UseCap();
             app.UseMvc();
         }
     }

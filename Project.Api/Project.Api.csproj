@@ -11,6 +11,9 @@
   <ItemGroup>
     <PackageReference Include="Consul" Version="0.7.2.4" />
     <PackageReference Include="Dapper" Version="1.50.4" />
+    <PackageReference Include="DotNetCore.CAP" Version="2.2.2" />
+    <PackageReference Include="DotNetCore.CAP.MySql" Version="2.2.2" />
+    <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="2.2.2" />
     <PackageReference Include="MediatR" Version="4.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="4.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
@@ -29,4 +32,12 @@
     <ProjectReference Include="..\Project.Infrastructure\Project.Infrastructure.csproj" />
   </ItemGroup>
 
+  <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'MySqlConnector'">
+        <Aliases>MySqlConnectorAlias</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+  
 </Project>

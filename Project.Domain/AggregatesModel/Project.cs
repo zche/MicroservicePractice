@@ -194,7 +194,12 @@ namespace Project.Domain.AggregatesModel
             if (!this.Viewers.Any(v => v.UserId == projectViewer.UserId))
             {
                 this.Viewers.Add(projectViewer);
-                this.AddDomainEvent(new ProjectViewedEvent { ProjectViewer = projectViewer });
+                this.AddDomainEvent(new ProjectViewedEvent
+                {
+                    ProjectViewer = projectViewer,
+                    Company = this.Company,
+                    Introduction = this.Company
+                });
             }
         }
         public void AddContributor(ProjectContributor projectContributor)
@@ -202,7 +207,12 @@ namespace Project.Domain.AggregatesModel
             if (!this.Contributors.Any(v => v.UserId == projectContributor.UserId))
             {
                 this.Contributors.Add(projectContributor);
-                this.AddDomainEvent(new ProjectJoinedEvent { ProjectContributor = projectContributor });
+                this.AddDomainEvent(new ProjectJoinedEvent
+                {
+                    ProjectContributor = projectContributor,
+                    Company = this.Company,
+                    Introduction = this.Company
+                });
             }
         }
     }
