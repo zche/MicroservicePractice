@@ -7,6 +7,6 @@ namespace Project.Domain.Events
 {
     public class ProjectCreatedEvent : INotification
     {
-        public Project.Domain.AggregatesModel.Project Project { get; set; } = new AggregatesModel.Project();
+        public Project.Domain.AggregatesModel.Project Project { get; set; }
     }
 }

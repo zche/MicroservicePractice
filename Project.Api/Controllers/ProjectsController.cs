@@ -56,6 +56,9 @@ namespace Project.Api.Controllers
         [HttpPost("")]
         public async Task<IActionResult> CreateProject([FromBody]Domain.AggregatesModel.Project project)
         {
+            if (project == null)
+                throw new ArgumentNullException(nameof(this.CreateProject));
+            project.UserId = UserIdentity.UserId;
             var command = new CreateProjectCommand { Project = project };
             var proj = await _mediator.Send(command);
             return Ok(proj);
@@ -63,6 +66,7 @@ namespace Project.Api.Controllers
         [HttpPut("view/{projectId}")]
         public async Task<IActionResult> ViewProject(int projectId)
         {
+
             if (!(await _recommand.IsRecommendedProject(projectId, UserIdentity.UserId)))
             {
                 return BadRequest("没有查看该项目的权限");

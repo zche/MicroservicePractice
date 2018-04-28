@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Project.Domain.AggregatesModel;
+using Project.Domain.Exceptions;
 
 namespace Project.Api.Application.Commands
 {
@@ -22,6 +23,10 @@ namespace Project.Api.Application.Commands
             if (project == null)
             {
                 throw new Domain.Exceptions.ProjectDomainException($"Project not found:{request.Contributor.ProjectId}");
+            }
+            if (project.UserId == request.Contributor.UserId)
+            {
+                throw new ProjectDomainException("你不能加入自己的项目");
             }
             project.AddContributor(request.Contributor);
             await _projectRepository.UnitOfWork.SaveEntitiesAsync();

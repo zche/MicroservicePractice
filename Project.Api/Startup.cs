@@ -20,6 +20,8 @@ using Consul;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Project.Api.Helper;
+using Project.Domain.AggregatesModel;
+using Project.Infrastructure.Repositories;
 
 namespace Project.Api
 {
@@ -66,7 +68,7 @@ namespace Project.Api
                     opt.Audience = "project_api";
                     opt.Authority = "http://localhost";
                 });
-
+            services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddMvc();
         }
 
