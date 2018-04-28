@@ -8,6 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Project.Infrastructure;
+using System.Reflection;
 
 namespace Project.Api
 {
@@ -23,6 +27,12 @@ namespace Project.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ProjectContext>(opt =>
+            {
+                opt.UseMySQL(Configuration.GetConnectionString("MysqlProject"), 
+                    builder => builder.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name));
+            });
+            services.AddMediatR();
             services.AddMvc();
         }
 

@@ -3,42 +3,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Project.Api.Application.Commands;
+using MediatR;
 
 namespace Project.Api.Controllers
 {
     [Route("api/[controller]")]
-    public class ProjectsController : Controller
+    public class ProjectsController : BaseController
     {
-        // GET api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private IMediator _mediator;
+        public ProjectsController(IMediator mediator)
         {
-            return new string[] { "value1", "value2" };
+            _mediator = mediator;
         }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpPost("")]
+        public async Task<IActionResult> CreateProject([FromBody]Domain.AggregatesModel.Project project)
         {
-            return "value";
+            var command = new CreateProjectCommand { Project = project };
+            var proj = await _mediator.Send(command);
+            return Ok(proj);
         }
-
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
+        [HttpPut("view/{projectId}")]
+        public async Task<IActionResult> ViewProject(int projectId)
         {
+            var command = new ViewProjectCommand
+            {
+                UserId = UserIdentity.UserId,
+                UserName = UserIdentity.Name,
+                Avatar = UserIdentity.Avatar,
+                ProjectId = projectId
+            };
+            await _mediator.Send(command);
+            return Ok();
         }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut("join/{projectId}")]
+        public async Task<IActionResult> JoinProject([FromBody]Domain.AggregatesModel.ProjectContributor contributor)
         {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var command = new JoinProjectCommand { Contributor = contributor };
+            await _mediator.Send(command);
+            return Ok();
         }
     }
 }

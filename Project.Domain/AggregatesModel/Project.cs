@@ -11,6 +11,8 @@ namespace Project.Domain.AggregatesModel
     {
         #region 属性
         public int UserId { get; set; }
+
+        public string UserName { get; set; }
         /// <summary>
         /// 公司名称
         /// </summary>

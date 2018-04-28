@@ -11,6 +11,6 @@ namespace Project.Domain.AggregatesModel
         Task<Project> GetAsync(int id);
         Task<Project> AddAsync(Project project);
 
-        Task<Project> UpdateAsync(Project project);
+        void UpdateAsync(Project project);
     }
 }
