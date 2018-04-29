@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
-using Consul;
-using Contact.Api.Configurations;
-using Contact.Api.Data;
-using Contact.Api.Helper;
-using Contact.Api.Infrastructure;
-using Contact.Api.IntegrationEvents;
-using Contact.Api.Services;
-using DnsClient;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Recommend.Api.Data;
+using Recommend.Api.Infrastructure;
+using Recommend.Api.Configurations;
+using DnsClient;
 using Resilience.Http;
+using Microsoft.AspNetCore.Http;
+using Recommend.Api.Services;
 
-namespace Contact.Api
+namespace Recommend.Api
 {
     public class Startup
     {
@@ -36,24 +31,13 @@ namespace Contact.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContactApplyRequestRepository, MongoContactApplyRequestRepository>();
-            services.AddScoped<IContactBookRepository, MongoContactBookRepository>();
+            services.AddDbContext<RecommendContext>(opt=> {
+                opt.UseMySQL(Configuration.GetConnectionString("MysqlRecommend"));
+            });
+
+            services.AddScoped<IntegrationEventHandlers.ProjectCreatedIntegrationEventHandler>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<UserProfileChangedEventHandler>();
-
-            services.Configure<MongoDBSetting>(Configuration.GetSection("MongoSettings"));
-            services.AddSingleton<ContactContext>();
-
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt =>
-                {
-                    opt.RequireHttpsMetadata = false;
-                    opt.Audience = "contact_api";
-                    opt.Authority = "http://localhost";
-                    opt.SaveToken = true;
-                });
-
+            services.AddScoped<IContactService, ContactService>();
             services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
             services.AddSingleton<IDnsQuery>(p =>
             {
@@ -72,22 +56,9 @@ namespace Contact.Api
                 return new ResilienceHttpClientFactory(logger, httpContextAccessor, retryCount, exceptionsAllowedBeforeBreaking);
             });
             services.AddSingleton<IHttpClient>(sp => sp.GetRequiredService<ResilienceHttpClientFactory>().GetResilientHttpClient());
-
-            services.AddSingleton<IConsulClient>(p => new ConsulClient(cfg =>
-            {
-                var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
-
-                if (!string.IsNullOrEmpty(serviceConfiguration.Consul.HttpEndpoint))
-                {
-                    // if not configured, the client will use the default value "127.0.0.1:8500"
-                    cfg.Address = new Uri(serviceConfiguration.Consul.HttpEndpoint);
-                }
-            }));
-            services.AddSingleton<IHostedService, HostedService>();
-
             services.AddCap(opt =>
             {
-                opt.UseMySql("server=localhost;port=3306;database=beta_contact;userid=root;password=Zrf123456!;SslMode=none;")
+                opt.UseMySql("server=localhost;port=3306;database=beta_recommend;userid=root;password=Zrf123456!;SslMode=none;")
                 .UseRabbitMQ("localhost")
                 .UseDashboard();
                 opt.UseDiscovery(d =>
@@ -95,23 +66,22 @@ namespace Contact.Api
                     d.DiscoveryServerHostName = "localhost";
                     d.DiscoveryServerPort = 8500;
                     d.CurrentNodeHostName = "localhost";
-                    d.CurrentNodePort = 5679;
-                    d.NodeId = 2;
-                    d.NodeName = "CAP Contact节点";
+                    d.CurrentNodePort = 5681;
+                    d.NodeId = 4;
+                    d.NodeName = "CAP RecommendApi节点";
                 });
             });
+
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            GlobalObject.App = app;
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseAuthentication();
             app.UseCap();
             app.UseMvc();
         }

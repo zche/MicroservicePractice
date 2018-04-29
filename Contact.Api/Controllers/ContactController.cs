@@ -36,6 +36,18 @@ namespace Contact.Api.Controllers
         }
 
         /// <summary>
+        /// 获取当前用户的好友列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> Get(int userId)
+        {
+            var request = await _contactBookRepository.GetContactsAsync(userId);
+            return Json(request);
+        }
+
+
+        /// <summary>
         /// 获取当前用户的好友申请列表
         /// </summary>
         /// <returns></returns>

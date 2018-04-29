@@ -73,6 +73,22 @@
       }
     },
     {
+      "DownstreamPathTemplate": "/api/contact/{userId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5679
+        }
+      ],
+      "UpstreamPathTemplate": "/contact/{userId}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UserApiKey",
+        "AllowedScopes": [ "contact_api" ]
+      }
+    },
+    {
       "DownstreamPathTemplate": "/api/contact/apply-request",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

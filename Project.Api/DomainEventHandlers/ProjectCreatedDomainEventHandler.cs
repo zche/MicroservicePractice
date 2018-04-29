@@ -22,7 +22,12 @@ namespace Project.Api.DomainEventHandlers
             var @event = new ProjectCreatedIntegrationEvent {
                 ProjectId =notification.Project.Id,
                 CreatedTime=DateTime.Now,
-                UserId=notification.Project.UserId
+                UserId=notification.Project.UserId,
+                Company=notification.Project.Company,
+                FinancingStage=notification.Project.FinancingStage,
+                Introduction=notification.Project.Introduction,
+                ProjectAvatar=notification.Project.Avatar,
+                Tags=notification.Project.Tags
             };
             await _capPublisher.PublishAsync("projectApi.project_created",@event);
         }

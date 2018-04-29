@@ -32,9 +32,10 @@ namespace User.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string connStr = Configuration.GetConnectionString("MysqlUser");
             services.AddDbContext<UserContext>(opt =>
             {
-                opt.UseMySQL(Configuration.GetConnectionString("MysqlUser"));
+                opt.UseMySQL(connStr);
             });
             services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
             services.AddSingleton<IConsulClient>(p => new ConsulClient(cfg =>
@@ -67,9 +68,9 @@ namespace User.Api
                     d.DiscoveryServerHostName = "localhost";
                     d.DiscoveryServerPort = 8500;
                     d.CurrentNodeHostName = "localhost";
-                    d.CurrentNodePort = 5800;
+                    d.CurrentNodePort = 5678;
                     d.NodeId = 1;
-                    d.NodeName = "CAP 第一个节点";
+                    d.NodeName = "CAP UserApi节点";
                 });
             });
 

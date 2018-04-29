@@ -60,7 +60,7 @@ namespace Resilience.Http
                 if (authorizationToken != null)
                 {
                     requestMessage.Headers.Authorization = new AuthenticationHeaderValue(authorizationMethod, authorizationToken);
-                }                
+                }
 
                 if (requestId != null)
                 {
@@ -70,7 +70,7 @@ namespace Resilience.Http
                 return await _client.SendAsync(requestMessage);
             });
         }
-        
+
 
         public Task<string> GetStringAsync(string uri, string authorizationToken = null, string authorizationMethod = "Bearer")
         {
@@ -176,7 +176,7 @@ namespace Resilience.Http
 
         private void SetAuthorizationHeader(HttpRequestMessage requestMessage)
         {
-            var authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            var authorizationHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"];
             if (!string.IsNullOrEmpty(authorizationHeader))
             {
                 requestMessage.Headers.Add("Authorization", new List<string>() { authorizationHeader });

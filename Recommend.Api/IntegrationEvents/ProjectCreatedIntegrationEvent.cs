@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Project.Api.IntegrationEvents
+namespace Recommend.Api.IntegrationEvents
 {
     public class ProjectCreatedIntegrationEvent
     {
@@ -16,7 +16,7 @@ namespace Project.Api.IntegrationEvents
         /// <summary>
         /// 融资阶段
         /// </summary>
-        public int FinancingStage { get; set; }
+        public string FinancingStage { get; set; }
         public DateTime CreatedTime { get; set; }
     }
 }

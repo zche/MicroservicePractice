@@ -79,9 +79,9 @@ namespace Project.Api
                     d.DiscoveryServerHostName = "localhost";
                     d.DiscoveryServerPort = 8500;
                     d.CurrentNodeHostName = "localhost";
-                    d.CurrentNodePort = 5802;
+                    d.CurrentNodePort = 5680;
                     d.NodeId = 3;
-                    d.NodeName = "CAP 第三个节点";
+                    d.NodeName = "CAP ProjectApi节点";
                 });
             });
             services.AddMvc();
