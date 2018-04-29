@@ -19,6 +19,7 @@ namespace User.Identity
                 new ApiResource("contact_api", "通讯录接口"),
                 new ApiResource("user_api", "用户接口"),
                 new ApiResource("project_api", "项目接口"),
+                new ApiResource("recommend_api", "推荐人接口"),
             };
         }
 
@@ -48,7 +49,8 @@ namespace User.Identity
                         "gateway_api",
                         "contact_api",
                         "user_api",
-                        "project_api"
+                        "project_api",
+                        "recommend_api"
                     }
                 }
             };

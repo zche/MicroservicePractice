@@ -16,6 +16,8 @@ using DnsClient;
 using Resilience.Http;
 using Microsoft.AspNetCore.Http;
 using Recommend.Api.Services;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Recommend.Api
 {
@@ -44,6 +46,16 @@ namespace Recommend.Api
                 var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
                 return new LookupClient(serviceConfiguration.Consul.DnsEndpoint.ToIPEndPoint());
             });
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt =>
+                {
+                    opt.RequireHttpsMetadata = false;
+                    opt.Audience = "recommend_api";
+                    opt.Authority = "http://localhost";
+                    opt.SaveToken = true;
+                });
 
             //services.AddSingleton(new HttpClient());
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -82,6 +94,7 @@ namespace Recommend.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseAuthentication();
             app.UseCap();
             app.UseMvc();
         }

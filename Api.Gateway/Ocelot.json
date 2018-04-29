@@ -155,6 +155,22 @@
         "AuthenticationProviderKey": "UserApiKey",
         "AllowedScopes": [ "project_api" ]
       }
+    },
+    {
+      "DownstreamPathTemplate": "/api/recommend",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5681
+        }
+      ],
+      "UpstreamPathTemplate": "/recommend",
+      "UpstreamHttpMethod": [ "Get"],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UserApiKey",
+        "AllowedScopes": [ "recommend_api" ]
+      }
     }
   ],
   "GlobalConfiguration": {
