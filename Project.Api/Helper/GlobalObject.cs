@@ -9,5 +9,6 @@ namespace Project.Api.Helper
     public class GlobalObject
     {
         public static IApplicationBuilder App { get; set; }
+        public static string DefaultConfigValue { get; set; } = "undefined";
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Com.Ctrip.Framework.Apollo;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,12 @@ namespace User.Api
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration(ConfigureConfiguration)
                 .UseStartup<Startup>()
                 .Build();
+
+        private static void ConfigureConfiguration(WebHostBuilderContext ctx, IConfigurationBuilder builder) =>
+            builder.AddApollo(builder.Build().GetSection("apollo"))
+            .AddDefault();
     }
 }

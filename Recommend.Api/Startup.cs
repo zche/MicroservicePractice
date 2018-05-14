@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Recommend.Api.Services;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Recommend.Api.Helper;
 
 namespace Recommend.Api
 {
@@ -34,7 +35,7 @@ namespace Recommend.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<RecommendContext>(opt=> {
-                opt.UseMySQL(Configuration.GetConnectionString("MysqlRecommend"));
+                opt.UseMySQL(Configuration.GetValue("MysqlRecommend", GlobalObject.DefaultConfigValue));
             });
 
             services.AddScoped<IntegrationEventHandlers.ProjectCreatedIntegrationEventHandler>();

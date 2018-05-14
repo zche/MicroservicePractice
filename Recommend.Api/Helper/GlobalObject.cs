@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace User.Api.Helper
+namespace Recommend.Api.Helper
 {
     public class GlobalObject
     {
-        public static IApplicationBuilder App { get; set; }
-
         public static string DefaultConfigValue { get; set; } = "undefined";
     }
 }

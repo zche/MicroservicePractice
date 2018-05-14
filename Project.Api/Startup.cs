@@ -39,7 +39,7 @@ namespace Project.Api
         {
             services.AddDbContext<ProjectContext>(opt =>
             {
-                opt.UseMySQL(Configuration.GetConnectionString("MysqlProject"),
+                opt.UseMySQL(Configuration.GetValue("MysqlProject",GlobalObject.DefaultConfigValue),
                     builder => builder.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name));
             });
             services.AddScoped<IRecommend, RecommendService>()
