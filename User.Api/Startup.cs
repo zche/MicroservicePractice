@@ -18,6 +18,7 @@ using User.Api.Helper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using Newtonsoft.Json;
+using DotNetCore.CAP;
 
 namespace User.Api
 {
@@ -68,18 +69,22 @@ namespace User.Api
                     opt.Audience = "user_api";
                     opt.Authority = "http://localhost";
                 });
+
+            var capDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_CAPDiscovery);
+            var strCAPDiscoveryConfig = capDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            DiscoveryOptions objCAPDiscovery = JsonConvert.DeserializeObject<DiscoveryOptions>(strCAPDiscoveryConfig);
             services.AddCap(opt =>
             {
                 opt.UseEntityFramework<UserContext>().UseRabbitMQ("localhost").UseDashboard();
                 //注册到consul
                 opt.UseDiscovery(d =>
                 {
-                    d.DiscoveryServerHostName = "localhost";
-                    d.DiscoveryServerPort = 8500;
-                    d.CurrentNodeHostName = "localhost";
-                    d.CurrentNodePort = 5678;
-                    d.NodeId = 1;
-                    d.NodeName = "CAP UserApi节点";
+                    d.DiscoveryServerHostName = objCAPDiscovery.DiscoveryServerHostName;
+                    d.DiscoveryServerPort = objCAPDiscovery.DiscoveryServerPort;
+                    d.CurrentNodeHostName = objCAPDiscovery.CurrentNodeHostName;
+                    d.CurrentNodePort = objCAPDiscovery.CurrentNodePort;
+                    d.NodeId = objCAPDiscovery.NodeId;
+                    d.NodeName = objCAPDiscovery.NodeName;
                 });
             });
 

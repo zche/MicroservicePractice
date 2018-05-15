@@ -25,6 +25,7 @@ namespace Recommend.Api
         private static void ConfigureConfiguration(WebHostBuilderContext ctx, IConfigurationBuilder builder) =>
            builder.AddApollo(builder.Build().GetSection("apollo"))
            .AddDefault()
+            .AddNamespace(GlobalObject.Namespace_CAPDiscovery + ".json", GlobalObject.Namespace_CAPDiscovery)
              .AddNamespace(GlobalObject.Namespace_ServiceDiscovery + ".json", GlobalObject.Namespace_ServiceDiscovery);
     }
 }

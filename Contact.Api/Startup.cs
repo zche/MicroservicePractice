@@ -11,6 +11,7 @@ using Contact.Api.Infrastructure;
 using Contact.Api.IntegrationEvents;
 using Contact.Api.Services;
 using DnsClient;
+using DotNetCore.CAP;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -108,19 +109,24 @@ namespace Contact.Api
             }));
             services.AddSingleton<IHostedService, HostedService>();
 
+            string connStr = Configuration.GetValue("MysqlContact", GlobalObject.DefaultConfigValue);
+
+            var capDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_CAPDiscovery);
+            var strCAPDiscoveryConfig = capDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            DiscoveryOptions objCAPDiscovery = JsonConvert.DeserializeObject<DiscoveryOptions>(strCAPDiscoveryConfig);
             services.AddCap(opt =>
             {
-                opt.UseMySql("server=localhost;port=3306;database=beta_contact;userid=root;password=Zrf123456!;SslMode=none;")
+                opt.UseMySql(connStr)
                 .UseRabbitMQ("localhost")
                 .UseDashboard();
                 opt.UseDiscovery(d =>
                 {
-                    d.DiscoveryServerHostName = "localhost";
-                    d.DiscoveryServerPort = 8500;
-                    d.CurrentNodeHostName = "localhost";
-                    d.CurrentNodePort = 5679;
-                    d.NodeId = 2;
-                    d.NodeName = "CAP Contact节点";
+                    d.DiscoveryServerHostName = objCAPDiscovery.DiscoveryServerHostName;
+                    d.DiscoveryServerPort = objCAPDiscovery.DiscoveryServerPort;
+                    d.CurrentNodeHostName = objCAPDiscovery.CurrentNodeHostName;
+                    d.CurrentNodePort = objCAPDiscovery.CurrentNodePort;
+                    d.NodeId = objCAPDiscovery.NodeId;
+                    d.NodeName = objCAPDiscovery.NodeName;
                 });
             });
             services.AddMvc();

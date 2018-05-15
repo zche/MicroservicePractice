@@ -12,5 +12,6 @@ namespace Project.Api.Helper
         public static string DefaultConfigValue { get; set; } = "undefined";
         public static string Namespace_ServiceDiscovery { get; set; } = "ServiceDiscovery";
         public static string Namespace_DefaultKey { get; set; } = "content";
+        public static string Namespace_CAPDiscovery { get; set; } = "CAPDiscovery";
     }
 }

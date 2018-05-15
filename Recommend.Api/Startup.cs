@@ -20,6 +20,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Recommend.Api.Helper;
 using Newtonsoft.Json;
+using DotNetCore.CAP;
 
 namespace Recommend.Api
 {
@@ -80,19 +81,22 @@ namespace Recommend.Api
                 return new ResilienceHttpClientFactory(logger, httpContextAccessor, retryCount, exceptionsAllowedBeforeBreaking);
             });
             services.AddSingleton<IHttpClient>(sp => sp.GetRequiredService<ResilienceHttpClientFactory>().GetResilientHttpClient());
+            var capDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_CAPDiscovery);
+            var strCAPDiscoveryConfig = capDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            DiscoveryOptions objCAPDiscovery = JsonConvert.DeserializeObject<DiscoveryOptions>(strCAPDiscoveryConfig);
             services.AddCap(opt =>
             {
-                opt.UseMySql("server=localhost;port=3306;database=beta_recommend;userid=root;password=Zrf123456!;SslMode=none;")
+                opt.UseEntityFramework<RecommendContext>()
                 .UseRabbitMQ("localhost")
                 .UseDashboard();
                 opt.UseDiscovery(d =>
                 {
-                    d.DiscoveryServerHostName = "localhost";
-                    d.DiscoveryServerPort = 8500;
-                    d.CurrentNodeHostName = "localhost";
-                    d.CurrentNodePort = 5681;
-                    d.NodeId = 4;
-                    d.NodeName = "CAP RecommendApi节点";
+                    d.DiscoveryServerHostName = objCAPDiscovery.DiscoveryServerHostName;
+                    d.DiscoveryServerPort = objCAPDiscovery.DiscoveryServerPort;
+                    d.CurrentNodeHostName = objCAPDiscovery.CurrentNodeHostName;
+                    d.CurrentNodePort = objCAPDiscovery.CurrentNodePort;
+                    d.NodeId = objCAPDiscovery.NodeId;
+                    d.NodeName = objCAPDiscovery.NodeName;
                 });
             });
 

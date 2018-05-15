@@ -23,6 +23,7 @@ using Project.Api.Helper;
 using Project.Domain.AggregatesModel;
 using Project.Infrastructure.Repositories;
 using Newtonsoft.Json;
+using DotNetCore.CAP;
 
 namespace Project.Api
 {
@@ -78,19 +79,21 @@ namespace Project.Api
                     opt.Authority = "http://localhost";
                 });
             services.AddScoped<IProjectRepository, ProjectRepository>();
-
+            var capDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_CAPDiscovery);
+            var strCAPDiscoveryConfig = capDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            DiscoveryOptions objCAPDiscovery = JsonConvert.DeserializeObject<DiscoveryOptions>(strCAPDiscoveryConfig);
             services.AddCap(opt =>
             {
                 opt.UseEntityFramework<ProjectContext>().UseRabbitMQ("localhost").UseDashboard();
                 //注册到consul
                 opt.UseDiscovery(d =>
                 {
-                    d.DiscoveryServerHostName = "localhost";
-                    d.DiscoveryServerPort = 8500;
-                    d.CurrentNodeHostName = "localhost";
-                    d.CurrentNodePort = 5680;
-                    d.NodeId = 3;
-                    d.NodeName = "CAP ProjectApi节点";
+                    d.DiscoveryServerHostName = objCAPDiscovery.DiscoveryServerHostName;
+                    d.DiscoveryServerPort = objCAPDiscovery.DiscoveryServerPort;
+                    d.CurrentNodeHostName = objCAPDiscovery.CurrentNodeHostName;
+                    d.CurrentNodePort = objCAPDiscovery.CurrentNodePort;
+                    d.NodeId = objCAPDiscovery.NodeId;
+                    d.NodeName = objCAPDiscovery.NodeName;
                 });
             });
             services.AddMvc();
