@@ -17,6 +17,8 @@ using User.Identity.Services;
 using User.Identity.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using User.Identity.Authentication;
+using User.Identity.Helper;
+using Newtonsoft.Json;
 
 namespace User.Identity
 {
@@ -44,7 +46,18 @@ namespace User.Identity
             services.AddScoped<IUserService,UserService>();
 
 
-            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            //services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+
+            var serviceDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery);
+            var strServiceDiscoveryConfig = serviceDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(strServiceDiscoveryConfig);
+
+            services.Configure<ServiceDiscoveryOptions>(opt =>
+            {
+                opt.Consul = objServiceDiscovery.Consul;
+                opt.UserServiceName = objServiceDiscovery.UserServiceName;
+            });
+
             services.AddSingleton<IDnsQuery>(p =>
             {
                 var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;

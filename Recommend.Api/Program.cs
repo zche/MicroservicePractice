@@ -8,15 +8,13 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Recommend.Api.Helper;
 
 namespace Recommend.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
-        {
-            BuildWebHost(args).Run();
-        }
+        public static void Main(string[] args) => BuildWebHost(args).Run();
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
@@ -26,6 +24,7 @@ namespace Recommend.Api
 
         private static void ConfigureConfiguration(WebHostBuilderContext ctx, IConfigurationBuilder builder) =>
            builder.AddApollo(builder.Build().GetSection("apollo"))
-           .AddDefault();
+           .AddDefault()
+             .AddNamespace(GlobalObject.Namespace_ServiceDiscovery + ".json", GlobalObject.Namespace_ServiceDiscovery);
     }
 }

@@ -19,6 +19,7 @@ using Recommend.Api.Services;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Recommend.Api.Helper;
+using Newtonsoft.Json;
 
 namespace Recommend.Api
 {
@@ -41,7 +42,17 @@ namespace Recommend.Api
             services.AddScoped<IntegrationEventHandlers.ProjectCreatedIntegrationEventHandler>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IContactService, ContactService>();
-            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            //services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            var serviceDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery);
+            var strServiceDiscoveryConfig = serviceDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(strServiceDiscoveryConfig);
+            services.Configure<ServiceDiscoveryOptions>(opt =>
+            {
+                opt.Consul = objServiceDiscovery.Consul;
+                opt.UserServiceName = objServiceDiscovery.UserServiceName;
+                opt.ContactServiceName = objServiceDiscovery.ContactServiceName;
+            });
+
             services.AddSingleton<IDnsQuery>(p =>
             {
                 var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;

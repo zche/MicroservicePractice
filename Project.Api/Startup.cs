@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Project.Api.Helper;
 using Project.Domain.AggregatesModel;
 using Project.Infrastructure.Repositories;
+using Newtonsoft.Json;
 
 namespace Project.Api
 {
@@ -44,11 +45,19 @@ namespace Project.Api
             });
             services.AddScoped<IRecommend, RecommendService>()
                     .AddScoped<IProjectQueries, ProjectQueriesService>(sp=> {
-                        return new ProjectQueriesService(Configuration.GetConnectionString("MysqlProject"));
+                        return new ProjectQueriesService(Configuration.GetValue("MysqlProject", GlobalObject.DefaultConfigValue));
                     });
             services.AddMediatR();
 
-            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            //services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            var serviceDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery);
+            var strServiceDiscoveryConfig = serviceDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(strServiceDiscoveryConfig);
+            services.Configure<ServiceDiscoveryOptions>(opt =>
+            {
+                opt.Consul = objServiceDiscovery.Consul;
+                opt.ServiceName = objServiceDiscovery.ServiceName;
+            });
             services.AddSingleton<IConsulClient>(p => new ConsulClient(cfg =>
             {
                 var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;

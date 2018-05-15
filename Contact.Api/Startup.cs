@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Resilience.Http;
 
 namespace Contact.Api
@@ -41,7 +42,19 @@ namespace Contact.Api
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<UserProfileChangedEventHandler>();
 
-            services.Configure<MongoDBSetting>(Configuration.GetSection("MongoSettings"));
+            //services.Configure<MongoDBSetting>(Configuration.GetSection("MongoSettings"));
+
+            var mongoSettingsConfig = Configuration.GetSection(GlobalObject.Namespace_MongoSettings);
+            var strMongoSettingsConfig = mongoSettingsConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            MongoDBSetting objMongoSettings = JsonConvert.DeserializeObject<MongoDBSetting>(strMongoSettingsConfig);
+            services.Configure<MongoDBSetting>(opt =>
+            {
+                opt.DataBase = objMongoSettings.DataBase;
+                opt.UserName = objMongoSettings.UserName;
+                opt.Password = objMongoSettings.Password;
+                opt.Services = objMongoSettings.Services;
+            });
+
             services.AddSingleton<ContactContext>();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -54,7 +67,17 @@ namespace Contact.Api
                     opt.SaveToken = true;
                 });
 
-            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            //services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            var serviceDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery);
+            var strServiceDiscoveryConfig = serviceDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
+            ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(strServiceDiscoveryConfig);
+            services.Configure<ServiceDiscoveryOptions>(opt =>
+            {
+                opt.Consul = objServiceDiscovery.Consul;
+                opt.ServiceName = objServiceDiscovery.ServiceName;
+                opt.UserServiceName = objServiceDiscovery.UserServiceName;
+            });
+
             services.AddSingleton<IDnsQuery>(p =>
             {
                 var serviceConfiguration = p.GetRequiredService<IOptions<ServiceDiscoveryOptions>>().Value;
