@@ -21,8 +21,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nest;
 using Newtonsoft.Json;
 using Resilience.Http;
+using Contact.Api.ElasticSearch;
 
 namespace Contact.Api
 {
@@ -108,6 +110,7 @@ namespace Contact.Api
                 }
             }));
             services.AddSingleton<IHostedService, HostedService>();
+            services.AddSingleton<ElasticClient>(sp=> ContactSearchConfig.GetClient());
 
             string connStr = Configuration.GetValue("MysqlContact", GlobalObject.DefaultConfigValue);
 
