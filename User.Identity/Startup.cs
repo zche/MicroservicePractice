@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Http;
 using User.Identity.Authentication;
 using User.Identity.Helper;
 using Newtonsoft.Json;
+using zipkin4net.Middleware;
+using Microsoft.Extensions.Hosting;
 
 namespace User.Identity
 {
@@ -45,6 +47,7 @@ namespace User.Identity
             services.AddScoped<IAuthCodeService, TestAuthCodeService>();
             services.AddScoped<IUserService,UserService>();
 
+            services.AddSingleton<IHostedService, HostedService>();
 
             //services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
 
@@ -81,12 +84,15 @@ namespace User.Identity
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            GlobalObject.App = app;
+            app.UseTracing("identity_api");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             app.UseIdentityServer();
             app.UseMvc();
+            
         }
     }
 }

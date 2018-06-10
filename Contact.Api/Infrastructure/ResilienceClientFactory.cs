@@ -24,7 +24,7 @@ namespace Contact.Api.Infrastructure
             _retryCount = retryCount;
             _exceptionCountBeforeBreaking = exceptionCountBeforeBreaking;
         }
-        public ResilientHttpClient GetResilientHttpClient() => new ResilientHttpClient(origin => CreatePolicy(), _logger, _httpContextAccessor);
+        public ResilientHttpClient GetResilientHttpClient() => new ResilientHttpClient(origin => CreatePolicy(), _logger, _httpContextAccessor,"");
 
         private Policy[] CreatePolicy()
         {

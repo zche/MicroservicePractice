@@ -24,7 +24,7 @@ namespace User.Identity.Infrastructure
             _retryCount = retryCount;
             _exceptionCountBeforeBreaking = exceptionCountBeforeBreaking;
         }
-        public ResilientHttpClient GetResilientHttpClient() => new ResilientHttpClient(origin => CreatePolicy(), _logger, _httpContextAccessor);
+        public ResilientHttpClient GetResilientHttpClient() => new ResilientHttpClient(origin => CreatePolicy(), _logger, _httpContextAccessor, "identity_api");
 
         private Policy[] CreatePolicy()
         {

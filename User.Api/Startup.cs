@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using Newtonsoft.Json;
 using DotNetCore.CAP;
+using zipkin4net.Middleware;
 
 namespace User.Api
 {
@@ -95,6 +96,7 @@ namespace User.Api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             GlobalObject.App = app;
+            app.UseTracing("user_api");
             //if (env.IsDevelopment())
             //{
             //    app.UseDeveloperExceptionPage();
@@ -106,6 +108,7 @@ namespace User.Api
             //}          
             app.UseAuthentication();
             app.UseMvc();
+            
             loggerFactory.AddNLog();//添加NLog 
             NLog.LogManager.LoadConfiguration("nlog.config");
             //UserContextSeed.SeedAsync(app, loggerFactory).Wait();
