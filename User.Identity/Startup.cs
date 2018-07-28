@@ -45,21 +45,24 @@ namespace User.Identity
                 .AddInMemoryApiResources(InMemoryConfiguration.ApiResources());
 
             services.AddScoped<IAuthCodeService, TestAuthCodeService>();
-            services.AddScoped<IUserService,UserService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddSingleton<IHostedService, HostedService>();
 
-            //services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
+            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery));
 
-            var serviceDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery);
-            var strServiceDiscoveryConfig = serviceDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
-            ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(strServiceDiscoveryConfig);
+            var serviceProvider = services.BuildServiceProvider();
+            var optionsMonitor = serviceProvider.GetService<IOptionsMonitor<ServiceDiscoveryOptions>>();
 
-            services.Configure<ServiceDiscoveryOptions>(opt =>
-            {
-                opt.Consul = objServiceDiscovery.Consul;
-                opt.UserServiceName = objServiceDiscovery.UserServiceName;
-            });
+            optionsMonitor.OnChange(OnChanged);
+
+            ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(Configuration["ServiceDiscovery:content"]);
+            GlobalObj.ServiceDiscovery = objServiceDiscovery;
+            //services.Configure<ServiceDiscoveryOptions>(opt =>
+            //{
+            //    opt.Consul = objServiceDiscovery.Consul;
+            //    opt.UserServiceName = objServiceDiscovery.UserServiceName;
+            //});
 
             services.AddSingleton<IDnsQuery>(p =>
             {
@@ -69,17 +72,28 @@ namespace User.Identity
 
             //services.AddSingleton(new HttpClient());
             //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton(typeof(ResilienceHttpClientFactory),sp=> {
+            services.AddSingleton(typeof(ResilienceHttpClientFactory), sp =>
+            {
                 var logger = sp.GetRequiredService<ILogger<ResilientHttpClient>>();
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
                 var retryCount = 5;
                 var exceptionsAllowedBeforeBreaking = 5;
-                return new ResilienceHttpClientFactory(logger,httpContextAccessor,retryCount,exceptionsAllowedBeforeBreaking);
+                return new ResilienceHttpClientFactory(logger, httpContextAccessor, retryCount, exceptionsAllowedBeforeBreaking);
             });
-            services.AddSingleton<IHttpClient>(sp=>sp.GetRequiredService<ResilienceHttpClientFactory>().GetResilientHttpClient());
+            services.AddSingleton<IHttpClient>(sp => sp.GetRequiredService<ResilienceHttpClientFactory>().GetResilientHttpClient());
 
             services.AddMvc();
         }
+
+        private void OnChanged(ServiceDiscoveryOptions value, string name)
+        {
+            ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(Configuration["ServiceDiscovery:content"]);
+            //var optionsMonitor = GlobalObject.App.ApplicationServices.GetService<IOptionsMonitor<ServiceDiscoveryOptions>>();
+            //optionsMonitor.CurrentValue.Consul = objServiceDiscovery.Consul;
+            //optionsMonitor.CurrentValue.UserServiceName = objServiceDiscovery.UserServiceName;
+            GlobalObj.ServiceDiscovery = objServiceDiscovery;
+        }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -92,7 +106,7 @@ namespace User.Identity
             }
             app.UseIdentityServer();
             app.UseMvc();
-            
+
         }
     }
 }

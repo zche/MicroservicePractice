@@ -11,4 +11,8 @@ namespace User.Identity.Configuration
 
         public ConsulOptions Consul { get; set; }
     }
+    public class Value
+    {
+        public string Test { get; set; }
+    }
 }
