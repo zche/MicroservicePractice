@@ -49,12 +49,12 @@ namespace User.Identity
 
             services.AddSingleton<IHostedService, HostedService>();
 
-            services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery));
+            //services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery));
+            //var serviceProvider = services.BuildServiceProvider();
+            //var optionsMonitor = serviceProvider.GetService<IOptionsMonitor<ServiceDiscoveryOptions>>();
 
-            var serviceProvider = services.BuildServiceProvider();
-            var optionsMonitor = serviceProvider.GetService<IOptionsMonitor<ServiceDiscoveryOptions>>();
-
-            optionsMonitor.OnChange(OnChanged);
+            //optionsMonitor.OnChange(OnChanged);
+            new ConfigurationMonitor(Configuration);
 
             ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(Configuration["ServiceDiscovery:content"]);
             GlobalObj.ServiceDiscovery = objServiceDiscovery;
