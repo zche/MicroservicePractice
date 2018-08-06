@@ -87,6 +87,8 @@ namespace User.Identity
 
         private void OnChanged(ServiceDiscoveryOptions value, string name)
         {
+
+
             ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(Configuration["ServiceDiscovery:content"]);
             //var optionsMonitor = GlobalObject.App.ApplicationServices.GetService<IOptionsMonitor<ServiceDiscoveryOptions>>();
             //optionsMonitor.CurrentValue.Consul = objServiceDiscovery.Consul;
