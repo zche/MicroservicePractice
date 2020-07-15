@@ -28,7 +28,7 @@ namespace User.Identity
         {
             ServiceDiscoveryOptions objServiceDiscovery = JsonConvert.DeserializeObject<ServiceDiscoveryOptions>(_configuration["ServiceDiscovery:content"]);
             GlobalObj.ServiceDiscovery = objServiceDiscovery;
-            Console.WriteLine("Changes for namespace {0}", changeEvent.Namespace);
+            Console.WriteLine("Changes for namespace {0}", changeEvent.Config);
             foreach (var change in changeEvent.Changes)
             {
                 Console.WriteLine("Change - key: {0}, oldValue: {1}, newValue: {2}, changeType: {3}",

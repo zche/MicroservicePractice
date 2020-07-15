@@ -20,6 +20,9 @@ using System.IdentityModel.Tokens.Jwt;
 using Newtonsoft.Json;
 using DotNetCore.CAP;
 using zipkin4net.Middleware;
+using IdentityServer4.Configuration;
+using DotNetCore.CAP.Dashboard.NodeDiscovery;
+using DiscoveryOptions = DotNetCore.CAP.Dashboard.NodeDiscovery.DiscoveryOptions;
 
 namespace User.Api
 {
@@ -89,11 +92,11 @@ namespace User.Api
                 });
             });
 
-            services.AddMvc();
+            services.AddMvc(opt => opt.EnableEndpointRouting=false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             GlobalObject.App = app;
             app.UseTracing("user_api");
@@ -104,7 +107,7 @@ namespace User.Api
             //else
             //{
             app.UseExceptionHandler("/api/users/Exception");
-            app.UseCap();
+            app.UseCapDashboard();
             //}          
             app.UseAuthentication();
             app.UseMvc();

@@ -71,7 +71,7 @@ namespace Project.Api.Controllers
             {
                 return BadRequest("没有查看该项目的权限");
             }
-            var command = new ViewProjectCommand
+            var command = new ViewProjectCommand<bool>
             {
                 UserId = UserIdentity.UserId,
                 UserName = UserIdentity.Name,
@@ -88,7 +88,7 @@ namespace Project.Api.Controllers
             {
                 return BadRequest("没有加入该项目的权限");
             }
-            var command = new JoinProjectCommand { Contributor = contributor };
+            var command = new JoinProjectCommand<bool> { Contributor = contributor };
             await _mediator.Send(command);
             return Ok();
         }

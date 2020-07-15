@@ -26,9 +26,9 @@ namespace Recommend.Api.Infrastructure
         }
         public ResilientHttpClient GetResilientHttpClient() => new ResilientHttpClient(origin => CreatePolicy(), _logger, _httpContextAccessor,"");
 
-        private Policy[] CreatePolicy()
+        private IAsyncPolicy[] CreatePolicy()
         {
-            return new Policy[] {
+            return new IAsyncPolicy[] {
                 Policy.Handle<HttpRequestException>()
                 .WaitAndRetryAsync(_retryCount,
                 retryAttempt=>TimeSpan.FromSeconds(Math.Pow(2,retryAttempt)),

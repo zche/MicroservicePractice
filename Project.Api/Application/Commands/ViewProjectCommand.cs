@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Project.Api.Application.Commands
 {
-    public class ViewProjectCommand:IRequest
+    public class ViewProjectCommand<T>:IRequest<T>
     {
         public int ProjectId { get; set; }
         public int UserId { get; set; }

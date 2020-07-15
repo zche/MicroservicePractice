@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Project.Api.Application.Commands
 {
-    public class JoinProjectCommand : IRequest
+    public class JoinProjectCommand<T> : IRequest<T>
     {
         public Domain.AggregatesModel.ProjectContributor Contributor { get; set; }
 }

@@ -9,7 +9,7 @@ using Project.Domain.Exceptions;
 
 namespace Project.Api.Application.Commands
 {
-    public class JoinProjectCommandHandler : IRequestHandler<JoinProjectCommand>
+    public class JoinProjectCommandHandler : IRequestHandler<JoinProjectCommand<bool>,bool>
     {
         private IProjectRepository _projectRepository;
         public JoinProjectCommandHandler(IProjectRepository projectRepository)
@@ -17,7 +17,7 @@ namespace Project.Api.Application.Commands
             _projectRepository = projectRepository;
         }
 
-        public async Task Handle(JoinProjectCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(JoinProjectCommand<bool> request, CancellationToken cancellationToken)
         {
             var project = await _projectRepository.GetAsync(request.Contributor.ProjectId);
             if (project == null)
@@ -29,7 +29,7 @@ namespace Project.Api.Application.Commands
                 throw new ProjectDomainException("你不能加入自己的项目");
             }
             project.AddContributor(request.Contributor);
-            await _projectRepository.UnitOfWork.SaveEntitiesAsync();
+            return await _projectRepository.UnitOfWork.SaveEntitiesAsync();            
         }
 
     }

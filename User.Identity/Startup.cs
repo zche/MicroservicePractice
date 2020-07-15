@@ -82,7 +82,7 @@ namespace User.Identity
             });
             services.AddSingleton<IHttpClient>(sp => sp.GetRequiredService<ResilienceHttpClientFactory>().GetResilientHttpClient());
 
-            services.AddMvc();
+            services.AddMvc(opt => opt.EnableEndpointRouting = false);
         }
 
         private void OnChanged(ServiceDiscoveryOptions value, string name)
@@ -98,7 +98,7 @@ namespace User.Identity
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             GlobalObject.App = app;
             app.UseTracing("identity_api");

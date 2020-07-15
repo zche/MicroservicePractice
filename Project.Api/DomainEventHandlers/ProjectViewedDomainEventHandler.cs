@@ -6,7 +6,6 @@ using Project.Domain.Events;
 using DotNetCore.CAP;
 using MediatR;
 using Project.Api.IntegrationEvents;
-using Project.Domain.Events;
 using System.Threading;
 
 namespace Project.Api.DomainEventHandlers

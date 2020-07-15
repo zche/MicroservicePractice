@@ -25,6 +25,7 @@ using Nest;
 using Newtonsoft.Json;
 using Resilience.Http;
 using Contact.Api.ElasticSearch;
+using DotNetCore.CAP.Dashboard.NodeDiscovery;
 
 namespace Contact.Api
 {
@@ -110,7 +111,7 @@ namespace Contact.Api
                 }
             }));
             services.AddSingleton<IHostedService, HostedService>();
-            services.AddSingleton<ElasticClient>(sp=> ContactSearchConfig.GetClient());
+            services.AddSingleton<ElasticClient>(sp => ContactSearchConfig.GetClient());
 
             string connStr = Configuration.GetValue("MysqlContact", GlobalObject.DefaultConfigValue);
 
@@ -132,11 +133,11 @@ namespace Contact.Api
                     d.NodeName = objCAPDiscovery.NodeName;
                 });
             });
-            services.AddMvc();
+            services.AddMvc(opt => opt.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             GlobalObject.App = app;
             if (env.IsDevelopment())
@@ -144,7 +145,7 @@ namespace Contact.Api
                 app.UseDeveloperExceptionPage();
             }
             app.UseAuthentication();
-            app.UseCap();
+            app.UseCapDashboard();
             app.UseMvc();
         }
     }

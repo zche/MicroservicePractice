@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Recommend.Api.Helper;
 using Newtonsoft.Json;
 using DotNetCore.CAP;
+using Microsoft.Extensions.Hosting;
 
 namespace Recommend.Api
 {
@@ -100,11 +101,11 @@ namespace Recommend.Api
                 });
             });
 
-            services.AddMvc();
+            services.AddMvc(opt => opt.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

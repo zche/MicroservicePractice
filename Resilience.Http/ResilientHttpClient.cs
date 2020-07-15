@@ -24,17 +24,17 @@ namespace Resilience.Http
     {
         private readonly HttpClient _client;
         private readonly ILogger<ResilientHttpClient> _logger;
-        private readonly Func<string, IEnumerable<Policy>> _policyCreator;
-        private ConcurrentDictionary<string, PolicyWrap> _policyWrappers;
+        private readonly Func<string, IEnumerable<IAsyncPolicy>> _policyCreator;
+        private ConcurrentDictionary<string, AsyncPolicyWrap> _policyWrappers;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ResilientHttpClient(Func<string, IEnumerable<Policy>> policyCreator, ILogger<ResilientHttpClient> logger,
+        public ResilientHttpClient(Func<string, IEnumerable<IAsyncPolicy>> policyCreator, ILogger<ResilientHttpClient> logger,
             IHttpContextAccessor httpContextAccessor, string zipkinAppName)
         {
             _client = new HttpClient(new TracingHandler(zipkinAppName));
             _logger = logger;
             _policyCreator = policyCreator;
-            _policyWrappers = new ConcurrentDictionary<string, PolicyWrap>();
+            _policyWrappers = new ConcurrentDictionary<string, AsyncPolicyWrap>();
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -52,8 +52,9 @@ namespace Resilience.Http
         public Task<HttpResponseMessage> DeleteAsync(string uri, string authorizationToken = null, string requestId = null, string authorizationMethod = "Bearer")
         {
             var origin = GetOriginFromUri(uri);
+            var ori = new Context(origin);
 
-            return HttpInvoker(origin, async () =>
+            return HttpInvoker(origin, async (ori) =>
             {
                 var requestMessage = new HttpRequestMessage(HttpMethod.Delete, uri);
 
@@ -77,8 +78,8 @@ namespace Resilience.Http
         public Task<string> GetStringAsync(string uri, string authorizationToken = null, string authorizationMethod = "Bearer")
         {
             var origin = GetOriginFromUri(uri);
-
-            return HttpInvoker(origin, async () =>
+            var ori = new Context(origin);
+            return HttpInvoker(origin, async (ori) =>
             {
                 var requestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
@@ -113,8 +114,8 @@ namespace Resilience.Http
             // a new StringContent must be created for each retry 
             // as it is disposed after each call
             var origin = GetOriginFromUri(uri);
-
-            return HttpInvoker(origin, async () =>
+            var ori = new Context(origin);
+            return HttpInvoker(origin, async (ori) =>
            {
                var requestMessage = new HttpRequestMessage(method, uri);
 
@@ -146,11 +147,11 @@ namespace Resilience.Http
            });
         }
 
-        private async Task<T> HttpInvoker<T>(string origin, Func<Task<T>> action)
+        private async Task<T> HttpInvoker<T>(string origin, Func<Context,Task<T>> action)
         {
             var normalizedOrigin = NormalizeOrigin(origin);
 
-            if (!_policyWrappers.TryGetValue(normalizedOrigin, out PolicyWrap policyWrap))
+            if (!_policyWrappers.TryGetValue(normalizedOrigin, out AsyncPolicyWrap policyWrap))
             {
                 policyWrap = Policy.WrapAsync(_policyCreator(normalizedOrigin).ToArray());
                 _policyWrappers.TryAdd(normalizedOrigin, policyWrap);

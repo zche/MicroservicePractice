@@ -24,6 +24,8 @@ using Project.Domain.AggregatesModel;
 using Project.Infrastructure.Repositories;
 using Newtonsoft.Json;
 using DotNetCore.CAP;
+using IdentityServer4.Configuration;
+using DotNetCore.CAP.Dashboard.NodeDiscovery;
 
 namespace Project.Api
 {
@@ -48,7 +50,12 @@ namespace Project.Api
                     .AddScoped<IProjectQueries, ProjectQueriesService>(sp=> {
                         return new ProjectQueriesService(Configuration.GetValue("MysqlProject", GlobalObject.DefaultConfigValue));
                     });
-            services.AddMediatR();
+            Assembly[] assemblies = {
+                Assembly.Load(new AssemblyName("Project.Api")),
+                Assembly.Load(new AssemblyName("Project.Domain")),
+                Assembly.Load(new AssemblyName("Project.Infrastructure"))
+                    };
+            services.AddMediatR(assemblies);
 
             //services.Configure<ServiceDiscoveryOptions>(Configuration.GetSection("ServiceDiscovery"));
             var serviceDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_ServiceDiscovery);
@@ -81,7 +88,7 @@ namespace Project.Api
             services.AddScoped<IProjectRepository, ProjectRepository>();
             var capDiscoveryConfig = Configuration.GetSection(GlobalObject.Namespace_CAPDiscovery);
             var strCAPDiscoveryConfig = capDiscoveryConfig.GetValue(GlobalObject.Namespace_DefaultKey, GlobalObject.DefaultConfigValue);
-            DiscoveryOptions objCAPDiscovery = JsonConvert.DeserializeObject<DiscoveryOptions>(strCAPDiscoveryConfig);
+            DotNetCore.CAP.Dashboard.NodeDiscovery.DiscoveryOptions objCAPDiscovery = JsonConvert.DeserializeObject<DotNetCore.CAP.Dashboard.NodeDiscovery.DiscoveryOptions>(strCAPDiscoveryConfig);
             services.AddCap(opt =>
             {
                 opt.UseEntityFramework<ProjectContext>().UseRabbitMQ("localhost").UseDashboard();
@@ -96,11 +103,11 @@ namespace Project.Api
                     d.NodeName = objCAPDiscovery.NodeName;
                 });
             });
-            services.AddMvc();
+            services.AddMvc(opt => opt.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             GlobalObject.App = app;
             if (env.IsDevelopment())
@@ -108,7 +115,7 @@ namespace Project.Api
                 app.UseDeveloperExceptionPage();
             }
             app.UseAuthentication();
-            app.UseCap();
+            app.UseCapDashboard();
             app.UseMvc();
         }
     }
